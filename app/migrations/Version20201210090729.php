@@ -34,7 +34,7 @@ final class Version20201210090729 extends AbstractMauticMigration
     {
         // Please modify to your needs
         $this->addSql('
-            CREATE TABLE `'.$this->prefix.'resouce_mapping` (
+            CREATE TABLE `'.$this->prefix.'resource_mapping` (
               `uuid` varchar(60) NOT NULL,
               `resource_type` varchar(30) NOT NULL,
               `resource_id` int(11) NOT NULL,
