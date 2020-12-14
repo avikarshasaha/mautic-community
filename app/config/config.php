@@ -345,3 +345,6 @@ $container->loadFromExtension('fm_elfinder', [
         ],
     ],
 ]);
+
+$container->autowire(\MauticPlugin\MauticNetworkBundle\EventListener\PostPersistListener::class)
+    ->addTag('doctrine.event_listener', ['event' => 'postPersist']);
