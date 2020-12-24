@@ -13,7 +13,7 @@ if ('index' == $tmpl) {
 }
 ?>
 
-<?php if (count($items)): ?>
+<?php if (count($items)) { ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered email-list">
             <thead>
@@ -102,7 +102,8 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $item): ?>
+            <?php foreach ($items as $item) { ?>
+                <?php $mauticTemplateVars['item'] = $item; ?>
                 <?php
                 $hasVariants                = $item->isVariant();
                 $hasTranslations            = $item->isTranslation();
@@ -158,33 +159,40 @@ if ('index' == $tmpl) {
                                 ['objectAction' => 'view', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getName(); ?>
-                                <?php if ($hasVariants): ?>
+                                <?php if ($hasVariants) { ?>
                                 <span data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.core.icon_tooltip.ab_test'); ?>">
                                     <i class="fa fa-fw fa-sitemap"></i>
                                 </span>
-                                <?php endif; ?>
-                                <?php if ($hasTranslations): ?>
+                                <?php } ?>
+                                <?php if ($hasTranslations) { ?>
                                 <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.core.icon_tooltip.translation'
                                     ); ?>">
                                     <i class="fa fa-fw fa-language"></i>
                                 </span>
-                                <?php endif; ?>
-                                <?php if ('list' == $type): ?>
+                                <?php } ?>
+                                <?php if ('list' == $type) { ?>
                                 <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.email.icon_tooltip.list_email'
                                     ); ?>">
                                     <i class="fa fa-fw fa-pie-chart"></i>
                                 </span>
-                                <?php endif; ?>
+                                <?php } ?>
+                                <?php if (true === $isDraftEnabled && $hasDraft) { ?>
+                                <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
+                                        'mautic.email.icon_tooltip.has_draft'
+                                    ); ?>">
+                                    <i class="fa fa-fw fa-file"></i>
+                                </span>
+                                <?php } ?>
                                 <?php echo $view['content']->getCustomContent('email.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
-                        <?php if ($description = $item->getDescription()): ?>
+                        <?php if ($description = $item->getDescription()) { ?>
                             <div class="text-muted mt-4">
                                 <small><?php echo $description; ?></small>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </td>
                     <td class="visible-md visible-lg">
                         <?php $category = $item->getCategory(); ?>
@@ -260,7 +268,7 @@ if ('index' == $tmpl) {
                     <td class="visible-lg"><?php echo $view->escape($item->getCreatedByUser()); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
     </div>
@@ -276,6 +284,6 @@ if ('index' == $tmpl) {
             ]
         ); ?>
     </div>
-<?php else: ?>
+<?php } else { ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
-<?php endif; ?>
+<?php } ?>

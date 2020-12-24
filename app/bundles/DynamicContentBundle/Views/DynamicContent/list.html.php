@@ -14,7 +14,7 @@ if ('index' == $tmpl) {
 /* @var \Mautic\DynamicContentBundle\Entity\DynamicContent[] $items */
 ?>
 
-<?php if (count($items)): ?>
+<?php if (count($items)) { ?>
     <div class="table-responsive page-list">
         <table class="table table-hover table-striped table-bordered dwctable-list" id="dwcTable">
             <thead>
@@ -77,7 +77,8 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $item): ?>
+            <?php foreach ($items as $item) { ?>
+                <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr>
                     <td>
                         <?php
@@ -119,23 +120,24 @@ if ('index' == $tmpl) {
                             $hasTranslations = $item->isTranslation();
                             $isFilterBased   = !$item->getIsCampaignBased();
 
-                            if ($hasVariants || $hasTranslations || $isFilterBased): ?>
+                            if ($hasVariants || $hasTranslations || $isFilterBased) { ?>
                                 <span>
-                                <?php if ($hasVariants): ?>
+                                <?php if ($hasVariants) { ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.core.icon_tooltip.ab_test'); ?>">
                                             <i class="fa fa-fw fa-sitemap"></i>
                                         </span>
-                                <?php endif; ?>
-                                    <?php if ($hasTranslations): ?>
+                                <?php } ?>
+                                    <?php if ($hasTranslations) { ?>
                                         <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                             'mautic.core.icon_tooltip.translation'
                                         ); ?>">
                                             <i class="fa fa-fw fa-language"></i>
                                         </span>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                  </span>
-                            <?php endif; ?>
+                            <?php } ?>
                         </a>
+                        <?php echo $view['content']->getCustomContent('dynamiccontent.name', $mauticTemplateVars); ?>
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getSlotName(); ?></td>
                     <td class="visible-md visible-lg">
@@ -146,7 +148,7 @@ if ('index' == $tmpl) {
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
         <div class="panel-footer">
@@ -163,6 +165,6 @@ if ('index' == $tmpl) {
             ); ?>
         </div>
     </div>
-<?php else: ?>
+<?php } else { ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
-<?php endif; ?>
+<?php } ?>

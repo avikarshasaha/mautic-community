@@ -13,7 +13,7 @@ if ('index' == $tmpl) {
 }
 ?>
 
-<?php if (count($items)): ?>
+<?php if (count($items)) { ?>
     <div class="table-responsive page-list">
         <table class="table table-hover table-striped table-bordered pagetable-list" id="pageTable">
             <thead>
@@ -118,6 +118,7 @@ if ('index' == $tmpl) {
             <?php
             foreach ($items as $i):
                 $item = $i[0];
+                $mauticTemplateVars['item'] = $item;
             ?>
                 <tr>
                     <td>
@@ -157,28 +158,29 @@ if ('index' == $tmpl) {
                             $hasTranslations    = $item->isTranslation();
                             $isPreferenceCenter = $item->isPreferenceCenter();
 
-                            if ($hasVariants || $hasTranslations || $isPreferenceCenter): ?>
+                            if ($hasVariants || $hasTranslations || $isPreferenceCenter){ ?>
                                 <span>
-                                <?php if ($hasVariants): ?>
+                                <?php if ($hasVariants) { ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.core.icon_tooltip.ab_test'); ?>">
                                             <i class="fa fa-fw fa-sitemap"></i>
                                         </span>
-                                <?php endif; ?>
-                                <?php if ($hasTranslations): ?>
+                                <?php } ?>
+                                <?php if ($hasTranslations) { ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.core.icon_tooltip.translation'
                                     ); ?>">
                                         <i class="fa fa-fw fa-language"></i>
                                     </span>
-                                <?php endif; ?>
-                                <?php if ($isPreferenceCenter): ?>
+                                <?php } ?>
+                                <?php if ($isPreferenceCenter) { ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.core.icon_tooltip.preference_center'); ?>">
                                         <i class="fa fa-fw fa-cog"></i>
                                     </span>
-                                <?php endif; ?>
+                                <?php } ?>
                                 </span>
-                            <?php endif; ?>
+                            <?php } ?>
                         </a>
+                        <?php echo $view['content']->getCustomContent('page.name', $mauticTemplateVars); ?>
                     </td>
                     <td class="visible-md visible-lg">
                         <?php $category = $item->getCategory(); ?>
@@ -208,7 +210,7 @@ if ('index' == $tmpl) {
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
         <div class="panel-footer">
@@ -225,6 +227,6 @@ if ('index' == $tmpl) {
             ); ?>
         </div>
     </div>
-<?php else: ?>
+<?php } else { ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
-<?php endif; ?>
+<?php } ?>

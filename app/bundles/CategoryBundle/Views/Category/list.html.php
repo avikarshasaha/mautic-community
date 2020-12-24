@@ -13,7 +13,7 @@ if ('index' == $tmpl) {
 }
 ?>
 
-<?php if (count($items)): ?>
+<?php if (count($items)) { ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered category-list" id="categoryTable">
             <thead>
@@ -77,7 +77,8 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $item): ?>
+            <?php foreach ($items as $item) { ?>
+                <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr>
                     <td>
                         <?php
@@ -117,31 +118,32 @@ if ('index' == $tmpl) {
                                 'MauticCoreBundle:Helper:publishstatus_icon.html.php',
                                 ['item' => $item, 'model' => 'category', 'query' => 'bundle='.$bundle]
                             ); ?>
-                            <?php if ($permissions[$permissionBase.':edit']): ?>
+                            <?php if ($permissions[$permissionBase.':edit']) { ?>
                                 <a href="<?php echo $view['router']->path(
                                     'mautic_category_action',
                                     ['bundle' => $bundle, 'objectAction' => 'edit', 'objectId' => $item->getId()]
                                 ); ?>" data-toggle="ajaxmodal" data-target="#MauticSharedModal" data-header="<?php echo $title; ?>"
-                            <?php endif; ?>
+                            <?php } ?>
                             <span><?php echo $item->getTitle(); ?> (<?php echo $item->getAlias(); ?>)</span>
-                            <?php if ($permissions[$permissionBase.':edit']): ?>
+                            <?php if ($permissions[$permissionBase.':edit']) { ?>
                                 </a>
-                            <?php endif; ?>
+                            <?php } ?>
+                            <?php echo $view['content']->getCustomContent('category.name', $mauticTemplateVars); ?>
                         </div>
-                        <?php if ($description = $item->getDescription()): ?>
+                        <?php if ($description = $item->getDescription()) { ?>
                             <div class="text-muted mt-4">
                                 <small><?php echo $description; ?></small>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </td>
                     <td class="visible-md visible-lg">
-                        <?php if (isset($categoryTypes[$item->getBundle()])) : ?>
+                        <?php if (isset($categoryTypes[$item->getBundle()])) { ?>
                             <?php echo $view['translator']->trans($categoryTypes[$item->getBundle()]); ?>
-                        <?php endif; ?>
+                        <?php } ?>
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
 
@@ -164,6 +166,6 @@ if ('index' == $tmpl) {
             ); ?>
         </div>
     </div>
-<?php else: ?>
+<?php } else { ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'mautic.category.noresults.tip']); ?>
-<?php endif; ?>
+<?php } ?>

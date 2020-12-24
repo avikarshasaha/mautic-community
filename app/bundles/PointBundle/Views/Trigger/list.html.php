@@ -13,7 +13,7 @@ if ('index' == $tmpl) {
 }
 ?>
 
-<?php if (count($items)): ?>
+<?php if (count($items)) { ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered pointtrigger-list" id="triggerTable">
             <thead>
@@ -78,7 +78,8 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $item): ?>
+            <?php foreach ($items as $item) { ?>
+                <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr>
                     <td>
                         <?php
@@ -106,22 +107,23 @@ if ('index' == $tmpl) {
                                 'MauticCoreBundle:Helper:publishstatus_icon.html.php',
                                 ['item' => $item, 'model' => 'point.trigger']
                             ); ?>
-                            <?php if ($permissions['point:triggers:edit']): ?>
+                            <?php if ($permissions['point:triggers:edit']) { ?>
                                 <a href="<?php echo $view['router']->path(
                                     'mautic_pointtrigger_action',
                                     ['objectAction' => 'edit', 'objectId' => $item->getId()]
                                 ); ?>" data-toggle="ajax">
                                     <?php echo $item->getName(); ?>
                                 </a>
-                            <?php else: ?>
+                            <?php } else { ?>
                                 <?php echo $item->getName(); ?>
-                            <?php endif; ?>
+                            <?php } ?>
+                            <?php echo $view['content']->getCustomContent('trigger.name', $mauticTemplateVars); ?>
                         </div>
-                        <?php if ($description = $item->getDescription()): ?>
+                        <?php if ($description = $item->getDescription()) { ?>
                             <div class="text-muted mt-4">
                                 <small><?php echo $description; ?></small>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </td>
                     <td class="visible-md visible-lg">
                         <?php $category = $item->getCategory(); ?>
@@ -132,7 +134,7 @@ if ('index' == $tmpl) {
                     <td><?php echo $item->getPoints(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
     </div>
@@ -149,6 +151,6 @@ if ('index' == $tmpl) {
             ]
         ); ?>
     </div>
-<?php else: ?>
+<?php } else { ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'mautic.point.trigger.noresults.tip']); ?>
-<?php endif; ?>
+<?php } ?>
