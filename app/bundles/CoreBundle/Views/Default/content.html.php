@@ -12,21 +12,22 @@ $request     = $app->getRequest();
 $contentOnly = $request->get('contentOnly', false) || $view['slots']->get('contentOnly', false) || !empty($contentOnly);
 $modalView   = $request->get('modal', false) || $view['slots']->get('inModal', false) || !empty($modalView);
 
-if (!$request->isXmlHttpRequest() && !$modalView):
+if (!$request->isXmlHttpRequest() && !$modalView) {
     //load base template
     $template = ($contentOnly) ? 'slim' : 'base';
     $view->extend("MauticCoreBundle:Default:$template.html.php");
-endif;
+}
+
 ?>
 
-<?php if (!$modalView): ?>
+<?php if (!$modalView) { ?>
 <div class="content-body">
-    <?php echo $view->render('MauticCoreBundle:Default:pageheader.html.php'); ?>
+    <?php echo $view->render('MauticCoreBundle:Default:pageheader.html.php', $mauticTemplateVars); ?>
 	<?php $view['slots']->output('_content'); ?>
 </div>
 
 <?php $view['slots']->output('modal'); ?>
 <?php echo $view['security']->getAuthenticationContent(); ?>
-<?php else: ?>
+<?php } else { ?>
 <?php $view['slots']->output('_content'); ?>
-<?php endif; ?>
+<?php } ?>
