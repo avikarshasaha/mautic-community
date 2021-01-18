@@ -12,7 +12,7 @@ if ('index' == $tmpl) {
     $view->extend('MauticAssetBundle:Asset:index.html.php');
 }
 ?>
-<?php if (count($items)) { ?>
+<?php if (count($items)): ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered asset-list" id="assetTable">
             <thead>
@@ -105,7 +105,7 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $k => $item) { ?>
+            <?php foreach ($items as $k => $item): ?>
                 <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr>
                     <td>
@@ -167,11 +167,11 @@ if ('index' == $tmpl) {
                             <i class="<?php echo $item->getIconClass(); ?>"></i>
                             <?php echo $view['content']->getCustomContent('asset.name', $mauticTemplateVars); ?>
                         </div>
-                        <?php if ($description = $item->getDescription()) { ?>
+                        <?php if ($description = $item->getDescription()): ?>
                             <div class="text-muted mt-4">
                                 <small><?php echo $description; ?></small>
                             </div>
-                        <?php } ?>
+                        <?php endif; ?>
                     </td>
                     <td class="visible-md visible-lg">
                         <?php $category = $item->getCategory(); ?>
@@ -189,7 +189,7 @@ if ('index' == $tmpl) {
                     <td class="visible-md visible-lg"><?php echo $item->getCreatedByUser(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php } ?>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -207,9 +207,9 @@ if ('index' == $tmpl) {
             ]
         ); ?>
     </div>
-<?php } else { ?>
+<?php else: ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'mautic.asset.noresults.tip']); ?>
-<?php } ?>
+<?php endif; ?>
 
 <?php echo $view->render(
     'MauticCoreBundle:Helper:modal.html.php',

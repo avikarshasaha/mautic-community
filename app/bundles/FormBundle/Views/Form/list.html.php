@@ -13,7 +13,7 @@ if ('index' == $tmpl) {
 }
 
 ?>
-<?php if (count($items)) { ?>
+<?php if (count($items)): ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered" id="formTable">
             <thead>
@@ -122,7 +122,7 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $i) { ?>
+            <?php foreach ($items as $i): ?>
                 <?php $item                       = $i[0]; ?>
                 <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr>
@@ -186,19 +186,19 @@ if ('index' == $tmpl) {
                                 ['objectAction' => 'view', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax" data-menu-link="mautic_form_index">
                                 <?php echo $item->getName(); ?>
-                                <?php if ('campaign' == $item->getFormType()) { ?>
+                                <?php if ('campaign' == $item->getFormType()): ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.form.icon_tooltip.campaign_form'
                                     ); ?>"><i class="fa fa-fw fa-cube"></i></span>
-                                <?php } ?>
+                                <?php endif; ?>
                             </a>
                             <?php echo $view['content']->getCustomContent('form.name', $mauticTemplateVars); ?>
                         </div>
-                        <?php if ($description = $item->getDescription()) { ?>
+                        <?php if ($description = $item->getDescription()): ?>
                             <div class="text-muted mt-4">
                                 <small><?php echo $description; ?></small>
                             </div>
-                        <?php } ?>
+                        <?php endif; ?>
                     </td>
                     <td class="visible-md visible-lg">
                         <?php $category = $item->getCategory(); ?>
@@ -223,7 +223,7 @@ if ('index' == $tmpl) {
                     <td class="visible-md visible-lg"><?php echo $item->getCreatedByUser(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php } ?>
+            <?php endforeach; ?>
             </tbody>
         </table>
         <div class="panel-footer">
@@ -239,6 +239,6 @@ if ('index' == $tmpl) {
             ); ?>
         </div>
     </div>
-<?php } else { ?>
+<?php else: ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'mautic.form.noresults.tip']); ?>
-<?php } ?>
+<?php endif; ?>

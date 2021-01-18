@@ -108,7 +108,6 @@ if ('index' == $tmpl) {
                 $hasTranslations            = $item->isTranslation();
                 $type                       = $item->getEmailType();
                 $mauticTemplateVars['item'] = $item;
-                
                 ?>
                 <tr>
                     <td>

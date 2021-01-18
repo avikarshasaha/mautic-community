@@ -14,7 +14,7 @@ if ('index' == $tmpl) {
     $view->extend('MauticLeadBundle:Field:index.html.php');
 }
 ?>
-<?php if (count($items)) { ?>
+<?php if (count($items)): ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered leadfield-list" id="leadFieldTable" class="overflow:auto">
             <thead>
@@ -44,7 +44,7 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($items as $item) { ?>
+            <?php foreach ($items as $item): ?>
                 <?php $mauticTemplateVars['item'] = $item; ?>
                 <tr id="field_<?php echo $item->getId(); ?>">
                     <td><i class="fa fa-fw fa-ellipsis-v"></i></td>
@@ -95,45 +95,45 @@ if ('index' == $tmpl) {
                         ); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                     <td class="visible-sm visible-md visible-lg">
-                        <?php if ($item->isRequired()) { ?>
+                        <?php if ($item->isRequired()): ?>
                             <i class="fa fa-asterisk" data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.required'
                             ); ?>"></i>
-                        <?php } ?>
-                        <?php if (!$item->isVisible()) { ?>
+                        <?php endif; ?>
+                        <?php if (!$item->isVisible()): ?>
                             <i class="fa fa-eye-slash" data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.invisible'
                             ); ?>"></i>
-                        <?php } ?>
-                        <?php if ($item->isFixed()) { ?>
+                        <?php endif; ?>
+                        <?php if ($item->isFixed()): ?>
                             <i class="fa fa-lock" data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.fixed'
                             ); ?>"></i>
-                        <?php } ?>
-                        <?php if ($item->isListable()) { ?>
+                        <?php endif; ?>
+                        <?php if ($item->isListable()): ?>
                             <i class="fa fa-list " data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.listable'
                             ); ?>"></i>
-                        <?php } ?>
-                        <?php if ($item->isPubliclyUpdatable()) { ?>
+                        <?php endif; ?>
+                        <?php if ($item->isPubliclyUpdatable()): ?>
                             <i class="fa fa-globe text-danger " data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.public'
                             ); ?>"></i>
-                        <?php } ?>
+                        <?php endif; ?>
 
-                        <?php if ($item->isUniqueIdentifer()) { ?>
+                        <?php if ($item->isUniqueIdentifer()): ?>
                             <i class="fa fa-key " data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.isuniqueidentifer'
                             ); ?>"></i>
-                        <?php } ?>
-                        <?php if ($item->isIsIndex()) { ?>
+                        <?php endif; ?>
+                        <?php if ($item->isIsIndex()): ?>
                             <i class="fa fa-info" data-toggle="tooltip" data-placement="left" title="<?php echo $view['translator']->trans(
                                 'mautic.lead.field.tooltip.isindex'
                             ); ?>"></i>
-                        <?php } ?>
+                        <?php endif; ?>
                     </td>
                 </tr>
-            <?php } ?>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -149,6 +149,6 @@ if ('index' == $tmpl) {
             ]
         ); ?>
     </div>
-<?php } else { ?>
+<?php else: ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
-<?php } ?>
+<?php endif; ?>
