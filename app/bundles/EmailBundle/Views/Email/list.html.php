@@ -103,7 +103,6 @@ if ('index' == $tmpl) {
             </thead>
             <tbody>
             <?php foreach ($items as $item) { ?>
-                <?php $mauticTemplateVars['item'] = $item; ?>
                 <?php
                 $hasVariants                = $item->isVariant();
                 $hasTranslations            = $item->isTranslation();
