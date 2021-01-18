@@ -12,7 +12,8 @@ if ('index' == $tmpl) {
     $view->extend('MauticNotificationBundle:Notification:index.html.php');
 }
 
-if (count($items)) {
+if (count($items)):
+
     ?>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered notification-list">
@@ -31,7 +32,7 @@ if (count($items)) {
                     ]
                 );
 
-    echo $view->render(
+                echo $view->render(
                     'MauticCoreBundle:Helper:tableheader.html.php',
                     [
                         'sessionVar' => 'notification',
@@ -42,7 +43,7 @@ if (count($items)) {
                     ]
                 );
 
-    echo $view->render(
+                echo $view->render(
                     'MauticCoreBundle:Helper:tableheader.html.php',
                     [
                         'sessionVar' => 'notification',
@@ -50,7 +51,8 @@ if (count($items)) {
                         'text'       => 'mautic.core.category',
                         'class'      => 'visible-md visible-lg col-notification-category',
                     ]
-                ); ?>
+                );
+                ?>
 
                 <th class="visible-sm visible-md visible-lg col-notification-stats"><?php echo $view['translator']->trans(
                         'mautic.core.stats'
@@ -65,15 +67,17 @@ if (count($items)) {
                         'text'       => 'mautic.core.id',
                         'class'      => 'visible-md visible-lg col-notification-id',
                     ]
-                ); ?>
+                );
+                ?>
             </tr>
             </thead>
             <tbody>
             <?php
             /** @var \Mautic\NotificationBundle\Entity\Notification $item */
-            foreach ($items as $item) {
+            foreach ($items as $item):
                 $type                       = $item->getNotificationType();
                 $mauticTemplateVars['item'] = $item; ?>
+                ?>
                 <tr>
                     <td>
                         <?php
@@ -82,7 +86,7 @@ if (count($items)) {
                             $permissions['notification:notifications:editother'],
                             $item->getCreatedBy()
                         );
-                $customButtons = [
+                        $customButtons = [
                             [
                                 'attr' => [
                                     'data-toggle' => 'ajaxmodal',
@@ -98,7 +102,7 @@ if (count($items)) {
                                 'iconClass' => 'fa fa-share',
                             ],
                         ];
-                echo $view->render(
+                        echo $view->render(
                             'MauticCoreBundle:Helper:list_actions.html.php',
                             [
                                 'item'            => $item,
@@ -113,28 +117,29 @@ if (count($items)) {
                                 'routeBase'     => 'notification',
                                 'customButtons' => $customButtons,
                             ]
-                        ); ?>
+                        );
+                        ?>
                     </td>
                     <td>
                         <div>
-                            <?php if ('template' == $type) { ?>
+                            <?php if ('template' == $type): ?>
                                 <?php echo $view->render(
                                     'MauticCoreBundle:Helper:publishstatus_icon.html.php',
                                     ['item' => $item, 'model' => 'notification']
                                 ); ?>
-                            <?php } else { ?>
+                            <?php else: ?>
                                 <i class="fa fa-fw fa-lg fa-toggle-on text-muted disabled"></i>
-                            <?php } ?>
+                            <?php endif; ?>
                             <a href="<?php echo $view['router']->path(
                                 'mautic_notification_action',
                                 ['objectAction' => 'view', 'objectId' => $item->getId()]
                             ); ?>">
                                 <?php echo $item->getName(); ?>
-                                <?php if ('list' == $type) { ?>
+                                <?php if ('list' == $type): ?>
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.notification.icon_tooltip.list_notification'
                                     ); ?>"><i class="fa fa-fw fa-list"></i></span>
-                                <?php } ?>
+                                <?php endif; ?>
                             </a>
                             <?php echo $view['content']->getCustomContent('notification.name', $mauticTemplateVars); ?>
                         </div>
@@ -160,8 +165,7 @@ if (count($items)) {
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
-            <?php
-            } ?>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -177,7 +181,6 @@ if (count($items)) {
             ]
         ); ?>
     </div>
-<?php
-} else { ?>
+<?php else: ?>
     <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php'); ?>
-<?php } ?>
+<?php endif; ?>
