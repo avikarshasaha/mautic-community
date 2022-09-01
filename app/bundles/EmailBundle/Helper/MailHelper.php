@@ -445,7 +445,7 @@ class MailHelper
             // Metadata has to be set for each recipient
             foreach ($this->queuedRecipients as $email => $name) {
                 $from    = $this->fromEmailHelper->getFromAddressArrayConsideringOwner($this->advancedFrom, $this->lead, $this->email);
-                $fromKey = key($from).$from[key($from)];
+                $fromKey = key($from).':'.$from[key($from)];
 
                 $tokens                = $this->getTokens();
                 $tokens['{signature}'] = $this->fromEmailHelper->getSignature();
