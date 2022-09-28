@@ -687,77 +687,7 @@ final class SubmissionFunctionalTest extends MauticMysqlTestCase
         $this->assertSame(Response::HTTP_OK, $clientResponse->getStatusCode(), $clientResponse->getContent());
     }
 
-    public function testSendSubmissionWhenFieldHaveMysqlReservedWords(): void
-    {
-        // Create the test form.
-        $payload = [
-            'name'        => 'Submission test form',
-            'description' => 'Form created via submission test',
-            'formType'    => 'standalone',
-            'isPublished' => true,
-            'fields'      => [
-                [
-                    'label'     => 'All',
-                    'type'      => 'text',
-                    'alias'     => 'all',
-                    'leadField' => 'firstname',
-                ],
-                [
-                    'label' => 'Submit',
-                    'type'  => 'button',
-                ],
-            ],
-            'postAction'  => 'return',
-        ];
-
-        $this->client->request(Request::METHOD_POST, '/api/forms/new', $payload);
-        $clientResponse = $this->client->getResponse();
-        $response       = json_decode($clientResponse->getContent(), true);
-        $formId         = $response['form']['id'];
-
-        $this->assertSame(Response::HTTP_CREATED, $clientResponse->getStatusCode(), $clientResponse->getContent());
-
-        // Submit the form:
-        $crawler     = $this->client->request(Request::METHOD_GET, "/form/{$formId}");
-        $formCrawler = $crawler->filter('form[id=mauticform_submissiontestform]');
-        $this->assertCount(1, $formCrawler, $crawler->html());
-        $form = $formCrawler->form();
-        $form->setValues([
-            'mauticform[f_all]' => 'test',
-        ]);
-        $this->client->submit($form);
-
-        // Ensure the submission was created properly.
-        $submissions = $this->em->getRepository(Submission::class)->findAll();
-        Assert::assertCount(1, $submissions);
-
-        /** @var Submission $submission */
-        $submission = $submissions[0];
-        Assert::assertSame([
-            'f_all' => 'test',
-        ], $submission->getResults());
-
-        // A contact should be created by the submission.
-        $contact = $submission->getLead();
-
-        Assert::assertSame('test', $contact->getFirstname());
-
-        // The previous request changes user to anonymous. We have to configure API again.
-        $this->setUpSymfony($this->configParams);
-
-        $this->client->request(Request::METHOD_GET, "/s/forms/results/{$formId}");
-        $clientResponse = $this->client->getResponse();
-        $this->assertSame(Response::HTTP_OK, $clientResponse->getStatusCode());
-        $this->assertStringContainsString('Results for Submission test form', $clientResponse->getContent());
-
-        // Cleanup:
-        $this->client->request(Request::METHOD_DELETE, "/api/forms/{$formId}/delete");
-        $clientResponse = $this->client->getResponse();
-
-        $this->assertSame(Response::HTTP_OK, $clientResponse->getStatusCode(), $clientResponse->getContent());
-    }
-
-    private function getUserPlainPassword(): string
+    protected function beforeTearDown(): void
     {
         return 'test-pass!23';
     }
@@ -1326,5 +1256,78 @@ final class SubmissionFunctionalTest extends MauticMysqlTestCase
                 'test2@test.com',
             ],
         ];
+    }
+
+    public function testAllRelatedEntitiesGetsDeletedIfFormGetsDeleted(): void
+    {
+        $payload = [
+            'name'        => 'Submission test form',
+            'description' => 'Form created via submission test',
+            'formType'    => 'standalone',
+            'isPublished' => true,
+            'fields'      => [
+                [
+                    'label'     => 'Name',
+                    'type'      => 'text',
+                    'alias'     => 'name',
+                ],
+                [
+                    'label' => 'Submit',
+                    'type'  => 'button',
+                ],
+            ],
+        ];
+
+        $this->client->request(Request::METHOD_POST, '/api/forms/new', $payload);
+        $clientResponse = $this->client->getResponse();
+        $response       = json_decode($clientResponse->getContent(), true);
+        $formId         = $response['form']['id'];
+        $formAlias      = $response['form']['alias'];
+
+        $this->assertSame(Response::HTTP_CREATED, $clientResponse->getStatusCode(), $clientResponse->getContent());
+
+        // Submit the form:
+        $crawler     = $this->client->request(Request::METHOD_GET, "/form/{$formId}");
+        $formCrawler = $crawler->filter('form[id=mauticform_submissiontestform]');
+        $this->assertSame(1, $formCrawler->count());
+        $form = $formCrawler->form();
+        $form->setValues([
+            'mauticform[name]' => 'Name',
+        ]);
+        $this->client->submit($form);
+
+        $clientResponse = $this->client->getResponse();
+
+        $this->assertSame(Response::HTTP_OK, $clientResponse->getStatusCode(), $clientResponse->getContent());
+
+        /** @var SubmissionRepository $submissionRepository */
+        $submissionRepository = $this->em->getRepository(Submission::class);
+
+        // Ensure the submission was created properly.
+        $submissions = $submissionRepository->findBy(['form' => $formId]);
+
+        Assert::assertCount(1, $submissions);
+
+        // The previous request changes user to anonymous. We have to configure API again.
+        $this->setUpSymfony(
+            [
+                'api_enabled'           => true,
+                'api_enable_basic_auth' => true,
+            ]
+        );
+
+        $this->client->request(Request::METHOD_DELETE, "/api/forms/{$formId}/delete");
+        $clientResponse = $this->client->getResponse();
+        $response       = json_decode($clientResponse->getContent(), true);
+
+        $this->assertSame(Response::HTTP_OK, $clientResponse->getStatusCode(), $clientResponse->getContent());
+
+        $tablePrefix = self::$container->getParameter('mautic.db_table_prefix');
+
+        $this->assertTrue(!$this->connection->getSchemaManager()->tablesExist("{$tablePrefix}form_results_{$formId}_{$formAlias}"));
+
+        $submissions = $submissionRepository->findBy(['form' => $formId]);
+
+        Assert::assertCount(0, $submissions);
     }
 }

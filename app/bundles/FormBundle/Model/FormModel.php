@@ -556,11 +556,10 @@ class FormModel extends CommonFormModel implements GlobalSearchInterface
         /* @var Form $entity */
         $this->deleteFormFiles($entity);
 
-        if (!$entity->getId()) {
-            // delete the associated results table
-            $this->tableSchemaHelper->deleteTable('form_results_'.$entity->deletedId.'_'.$entity->getAlias());
-            $this->tableSchemaHelper->executeChanges();
-        }
+        //delete the associated results table
+        $this->tableSchemaHelper->deleteTable('form_results_'.$entity->getId().'_'.$entity->getAlias());
+        $this->tableSchemaHelper->executeChanges();
+
         parent::deleteEntity($entity);
     }
 
