@@ -219,9 +219,9 @@ class EntityLookupChoiceLoader implements ChoiceLoaderInterface
         // Check if the method exists in the model
         $methodName = $this->options['model_lookup_method'] ?? null;
         if ($methodName && method_exists($model, $methodName)) {
-            $choices = call_user_func_array([$model, $this->options['model_lookup_method']], $args);
+            $choices = call_user_func_array([$model, $this->options['model_lookup_method']], array_values($args));
         } elseif (isset($this->options['repo_lookup_method'])) {
-            $choices = call_user_func_array([$model->getRepository(), $this->options['repo_lookup_method']], $args);
+            $choices = call_user_func_array([$model->getRepository(), $this->options['repo_lookup_method']], array_values($args));
         } else {
             // rewrite query to use expression builder
             $alias     = $model->getRepository()->getTableAlias();
