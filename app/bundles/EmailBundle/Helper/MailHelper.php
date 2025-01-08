@@ -548,9 +548,9 @@ class MailHelper
 
                 $flushed = $this->send(false, true);
 
-                $this->message->setTo([]);
 
                 foreach ($sameEmailContact as $data){
+                    $this->message->setTo([]);
                     $this->processMessageData($data);
                     $flushed = $this->send(false, true);
                 }
