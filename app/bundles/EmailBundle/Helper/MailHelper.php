@@ -537,17 +537,23 @@ class MailHelper
                     $this->setMessageFrom($this->getFrom());
                 }
 
-                foreach ($metadatum['contacts'] as $email => $contact) {
-                    $this->message->addMetadata($email, $contact);
-
-                    // Add asset stats if applicable
-                    if (!empty($contact['leadId'])) {
-                        $this->queueAssetDownloadEntry($email, $contact);
+                $sameEmailContact = [];
+                foreach ($metadatum['contacts'] as $data) {
+                    if (isset($this->message->getTo()[$data['email']])) {
+                        $sameEmailContact[] = $data;
+                        continue;
                     }
-                    $this->message->to(new Address($email, $contact['name'] ?? ''));
+                    $this->processMessageData($data);
                 }
 
                 $flushed = $this->send(false, true);
+
+                $this->message->setTo([]);
+
+                foreach ($sameEmailContact as $data){
+                    $this->processMessageData($data);
+                    $flushed = $this->send(false, true);
+                }
 
                 // Merge errors
                 if (isset($this->errors['failures'])) {
@@ -2145,5 +2151,22 @@ class MailHelper
         }
 
         unset($event);
+    }
+
+    /**
+     * @param array<mixed> $data
+     */
+    private function processMessageData(array $data): void
+    {
+        $email = $data['email'];
+        $contact = $data['metadata'];
+        $this->message->addMetadata($email, $contact);
+
+        // Add asset stats if applicable
+        if (!empty($contact['leadId'])) {
+            $this->queueAssetDownloadEntry($email, $contact);
+        }
+
+        $this->message->addTo($email, $contact['name']);
     }
 }
