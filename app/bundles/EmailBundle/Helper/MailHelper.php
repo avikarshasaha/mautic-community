@@ -548,8 +548,7 @@ class MailHelper
 
                 $flushed = $this->send(false, true);
 
-
-                foreach ($sameEmailContact as $data){
+                foreach ($sameEmailContact as $data) {
                     $this->message->setTo([]);
                     $this->processMessageData($data);
                     $flushed = $this->send(false, true);
@@ -2158,7 +2157,7 @@ class MailHelper
      */
     private function processMessageData(array $data): void
     {
-        $email = $data['email'];
+        $email   = $data['email'];
         $contact = $data['metadata'];
         $this->message->addMetadata($email, $contact);
 
