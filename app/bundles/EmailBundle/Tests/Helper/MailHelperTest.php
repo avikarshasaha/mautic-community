@@ -277,6 +277,38 @@ class MailHelperTest extends TestCase
         $this->assertArrayNotHasKey('failures', $errors, var_export($errors, true));
     }
 
+    public function testDuplicateEmail(): void
+    {
+        $mockFactory = $this->getMockFactory();
+        $transport   = new BatchTransport(false, 6);
+        $swiftMailer = new Swift_Mailer($transport);
+
+        $mailer = new MailHelper($mockFactory, $swiftMailer, $this->sMimeHelper, ['nobody@nowhere.com' => 'No Body']);
+
+        $email = new Email();
+        $email->setCustomHtml('<html>{unsubscribe_url}</html>');
+        $email->setUseOwnerAsMailer(false);
+        $mailer->setEmail($email);
+
+        $mailer->enableQueue();
+
+        $mailer->setSubject('Hello');
+
+        foreach ($this->contacts as $contact) {
+            $mailer->addTo($contact['email']);
+            $mailer->setLead($contact);
+            $mailer->queue();
+        }
+
+        $mailer->flushQueue([]);
+
+        $this->assertEmpty($mailer->getErrors()['failures']);
+
+        $to = $mailer->message->getTo();
+
+        $this->assertArrayHasKey('contact5@somewhere.com', $to);
+    }
+
     public function testQueuedOwnerAsMailer(): void
     {
         $mockFactory = $this->getMockFactory();
