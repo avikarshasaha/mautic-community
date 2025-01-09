@@ -539,7 +539,7 @@ class MailHelper
 
                 $sameEmailContact = [];
                 foreach ($metadatum['contacts'] as $data) {
-                    if (isset($this->message->getTo()[$data['email']])) {
+                    if (array_key_exists($data['email'], $this->message->getTo())) {
                         $sameEmailContact[] = $data;
                         continue;
                     }
