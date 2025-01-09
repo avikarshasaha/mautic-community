@@ -133,6 +133,20 @@ class MailHelperTest extends TestCase
             'lastname'  => '4',
             'owner_id'  => 1,
         ],
+        [
+            'id'        => 5,
+            'email'     => 'contact5@somewhere.com',
+            'firstname' => 'Contact 5',
+            'lastname'  => '3',
+            'owner_id'  => 3,
+        ],
+        [
+            'id'        => 6,
+            'email'     => 'contact5@somewhere.com',
+            'firstname' => 'Contact 6',
+            'lastname'  => '3',
+            'owner_id'  => 4,
+        ],
     ];
 
     protected function setUp(): void
@@ -265,15 +279,9 @@ class MailHelperTest extends TestCase
 
     public function testQueuedOwnerAsMailer(): void
     {
-        $this->coreParametersHelper->method('get')->willReturnMap($this->defaultParams);
-
-        $this->contactRepository->method('getLeadOwner')
-            ->willReturnOnConsecutiveCalls(
-                ['email' => 'owner1@owner.com', 'first_name' => 'owner 1', 'last_name' => null, 'signature' => 'owner 1'],
-                ['email' => 'owner2@owner.com', 'first_name' => 'owner 2', 'last_name' => null, 'signature' => 'owner 2'],
-            );
-        $transport     = new BatchTransport();
-        $symfonyMailer = new Mailer($transport);
+        $mockFactory = $this->getMockFactory();
+        $transport   = new BatchTransport();
+        $swiftMailer = new Swift_Mailer($transport);
 
         $mailer = new MailHelper($this->mockFactory, $symfonyMailer, $this->fromEmailHelper, $this->coreParametersHelper, $this->mailbox, $this->logger, $this->mailHashHelper, $this->router, $this->twig, $this->themeHelper, $this->slotsHelper, $this->createMock(PathsHelper::class), $this->createMock(EventDispatcherInterface::class), $this->requestStack);
 
@@ -284,6 +292,31 @@ class MailHelperTest extends TestCase
 
         $mailer->setEmail($email);
         $mailer->enableQueue();
+        $this->fromEmailHelper->expects($this->exactly(4))
+            ->method('getFromAddressArrayConsideringOwner')
+            ->willReturnOnConsecutiveCalls(
+                ['owner1@owner.com' => 'owner 1'],
+                ['nobody@nowhere.com' => 'No Body'],
+                ['owner2@owner.com'   => 'owner 2'],
+                ['owner1@owner.com'   => 'owner 1']
+            );
+        $this->fromEmailHelper->expects($this->exactly(3))
+            ->method('getReplyToAddressConsideringOwner')
+            ->willReturnOnConsecutiveCalls(
+                'owner1@owner.com',
+                'nobody@nowhere.com',
+                'owner2@owner.com',
+            );
+        $this->fromEmailHelper
+            ->method('getSignature')
+            ->willReturnOnConsecutiveCalls(
+                'owner 1',
+                '',
+                'owner 2',
+                'owner 1'
+            );
+
+        $mailer->setSubject('Hello');
 
         foreach ($this->contacts as $contact) {
             $mailer->addTo($contact['email']);
