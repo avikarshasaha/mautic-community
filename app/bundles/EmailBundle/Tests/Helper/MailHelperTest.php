@@ -263,6 +263,44 @@ class MailHelperTest extends TestCase
         $this->assertArrayNotHasKey('failures', $errors, var_export($errors, true));
     }
 
+    public function testDuplicateEmail(): void
+    {
+        $this->coreParametersHelper->method('get')->willReturnMap($this->defaultParams);
+
+        $this->contactRepository->method('getLeadOwner')
+            ->willReturnOnConsecutiveCalls(
+                ['email' => 'owner1@owner.com', 'first_name' => 'owner 1', 'last_name' => null, 'signature' => 'owner 1'],
+                ['email' => 'owner2@owner.com', 'first_name' => 'owner 2', 'last_name' => null, 'signature' => 'owner 2'],
+            );
+        $transport     = new BatchTransport(false, 8);
+        $symfonyMailer = new Mailer($transport);
+
+        $mailer = new MailHelper($this->mockFactory, $symfonyMailer, $this->fromEmailHelper, $this->coreParametersHelper, $this->mailbox, $this->logger, $this->mailHashHelper, $this->router, $this->twig, $this->themeHelper, $this->slotsHelper, $this->createMock(PathsHelper::class), $this->createMock(EventDispatcherInterface::class), $this->requestStack);
+
+        $email = new Email();
+        $email->setCustomHtml('<html>{unsubscribe_url}</html>');
+        $email->setUseOwnerAsMailer(false);
+        $mailer->setEmail($email);
+
+        $mailer->enableQueue();
+
+        $mailer->setSubject('Hello');
+
+        $mailer->addTo($this->contacts[0]['email']);
+        $mailer->setLead($this->contacts[0]);
+        $mailer->queue();
+
+        $mailer->addTo($this->contacts[0]['email']);
+        $mailer->setLead($this->contacts[0]);
+        $mailer->queue();
+
+        $mailer->flushQueue([]);
+
+        $this->assertEmpty($mailer->getErrors()['failures']);
+
+        $this->assertSame($this->contacts[0]['email'], $mailer->message->getTo()[0]->getAddress());
+    }
+
     public function testQueuedOwnerAsMailer(): void
     {
         $this->coreParametersHelper->method('get')->willReturnMap($this->defaultParams);

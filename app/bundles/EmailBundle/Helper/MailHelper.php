@@ -445,19 +445,23 @@ class MailHelper
             // Metadata has to be set for each recipient
             foreach ($this->queuedRecipients as $email => $name) {
                 $from        = $this->fromEmailHelper->getFromAddressConsideringOwner($this->getFrom(), $this->lead, $this->email);
-                $fromAddress = $from->getEmail();
+                $fromAddress = $from->getAddressArray();
+                $fromKey     = key($fromAddress).$fromAddress[key($fromAddress)];
 
                 $tokens                = $this->getTokens();
                 $tokens['{signature}'] = $this->fromEmailHelper->getSignature();
 
-                if (!isset($this->metadata[$fromAddress])) {
-                    $this->metadata[$fromAddress] = [
+                if (!isset($this->metadata[$fromKey])) {
+                    $this->metadata[$fromKey] = [
                         'from'     => $from,
                         'contacts' => [],
                     ];
                 }
 
-                $this->metadata[$fromAddress]['contacts'][$email] = $this->buildMetadata($name, $tokens);
+                $this->metadata[$fromKey]['contacts'][$email] = [
+                    'email'    => $email,
+                    'metadata' => $this->buildMetadata($name, $tokens),
+                ];
             }
 
             // Reset recipients
@@ -2166,6 +2170,6 @@ class MailHelper
             $this->queueAssetDownloadEntry($email, $contact);
         }
 
-        $this->message->addTo($email, $contact['name']);
+        $this->message->to(new Address($email, $contact['name'] ?? ''));
     }
 }
