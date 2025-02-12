@@ -476,6 +476,8 @@ return [
                     'monolog.logger.mautic',
                     'event_dispatcher',
                     'mautic.lead.merger',
+                    'mautic.email.repository.stat',
+                    'mautic.helper.bot_ratio',
                 ],
             ],
             'mautic.lead.validator.length' => [
@@ -536,6 +538,8 @@ return [
                     'mautic.helper.core_parameters',
                     'event_dispatcher',
                     'mautic.lead.model.field',
+                    'mautic.email.repository.stat',
+                    'mautic.helper.bot_ratio',
                 ],
             ],
             'mautic.tracker.device' => [
